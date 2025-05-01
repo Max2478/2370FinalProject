@@ -1,0 +1,12 @@
+../Core/Src/Connect4.c:44:6:drawHomeScreen	1
+../Core/Src/Connect4.c:81:6:drawGameBoard	5
+../Core/Src/Connect4.c:102:6:drawCoinIndicator	2
+../Core/Src/Connect4.c:110:5:getCurrentColumn	1
+../Core/Src/Connect4.c:113:6:setCurrentColumn	3
+../Core/Src/Connect4.c:127:5:getCurrentPlayer	1
+../Core/Src/Connect4.c:130:6:incrementPlayerScore	2
+../Core/Src/Connect4.c:138:6:setSinglePlayerMode	2
+../Core/Src/Connect4.c:147:6:dropCoin	6
+../Core/Src/Connect4.c:198:6:checkWin	22
+../Core/Src/Connect4.c:213:6:isBoardFull	3
+../Core/Src/Connect4.c:221:6:drawGameOverScreen	5
