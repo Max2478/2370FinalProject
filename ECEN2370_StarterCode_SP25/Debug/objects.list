@@ -1,6 +1,8 @@
 "./Core/Src/ApplicationCode.o"
 "./Core/Src/Connect4.o"
 "./Core/Src/LCD_Driver.o"
+"./Core/Src/RNG.o"
+"./Core/Src/TIM2.o"
 "./Core/Src/fonts.o"
 "./Core/Src/ili9341.o"
 "./Core/Src/main.o"

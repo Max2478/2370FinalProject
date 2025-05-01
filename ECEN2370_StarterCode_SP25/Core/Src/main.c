@@ -45,7 +45,7 @@ I2C_HandleTypeDef hi2c3;
 LTDC_HandleTypeDef hltdc;
 
 RNG_HandleTypeDef hrng;
-
+//
 SPI_HandleTypeDef hspi5;
 
 TIM_HandleTypeDef htim2;
@@ -58,7 +58,7 @@ TIM_HandleTypeDef htim2;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_LTDC_Init(void);
-static void MX_RNG_Init(void);
+//static void MX_RNG_Init(void);
 static void MX_TIM2_Init(void);
 static void MX_SPI5_Init(void);
 static void MX_I2C3_Init(void);
@@ -103,6 +103,7 @@ int main(void)
   MX_LTDC_Init();
   MX_RNG_Init();
   MX_TIM2_Init();
+  HAL_TIM_Base_Start(&htim2);
   MX_SPI5_Init();
   MX_I2C3_Init();
   /* USER CODE BEGIN 2 */
@@ -148,6 +149,8 @@ void SystemClock_Config(void)
   */
   __HAL_RCC_PWR_CLK_ENABLE();
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+  __HAL_RCC_RNG_CLK_ENABLE();
+
 
   /** Initializes the RCC Oscillators according to the specified parameters
   * in the RCC_OscInitTypeDef structure.
@@ -315,26 +318,27 @@ static void MX_LTDC_Init(void)
   * @param None
   * @retval None
   */
-static void MX_RNG_Init(void)
-{
 
-  /* USER CODE BEGIN RNG_Init 0 */
-
-  /* USER CODE END RNG_Init 0 */
-
-  /* USER CODE BEGIN RNG_Init 1 */
-
-  /* USER CODE END RNG_Init 1 */
-  hrng.Instance = RNG;
-  if (HAL_RNG_Init(&hrng) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN RNG_Init 2 */
-
-  /* USER CODE END RNG_Init 2 */
-
-}
+//static void MX_RNG_Init(void)
+//{
+//
+//  /* USER CODE BEGIN RNG_Init 0 */
+//
+//  /* USER CODE END RNG_Init 0 */
+//
+//  /* USER CODE BEGIN RNG_Init 1 */
+//
+//  /* USER CODE END RNG_Init 1 */
+//  hrng.Instance = RNG;
+//  if (HAL_RNG_Init(&hrng) != HAL_OK)
+//  {
+//    Error_Handler();
+//  }
+//  /* USER CODE BEGIN RNG_Init 2 */
+//
+//  /* USER CODE END RNG_Init 2 */
+//
+//}
 
 /**
   * @brief SPI5 Initialization Function
@@ -389,13 +393,16 @@ static void MX_TIM2_Init(void)
   TIM_ClockConfigTypeDef sClockSourceConfig = {0};
   TIM_MasterConfigTypeDef sMasterConfig = {0};
 
+//  __HAL_RCC_APB1_CLK_ENABLE();
+  __HAL_RCC_TIM2_CLK_ENABLE();
+
   /* USER CODE BEGIN TIM2_Init 1 */
 
   /* USER CODE END TIM2_Init 1 */
   htim2.Instance = TIM2;
-  htim2.Init.Prescaler = 0;
+  htim2.Init.Prescaler = 83999;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 4294967295;
+  htim2.Init.Period = 0xFFFFFFFF;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)

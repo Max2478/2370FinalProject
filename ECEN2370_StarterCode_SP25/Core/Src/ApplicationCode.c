@@ -43,9 +43,11 @@ void playGame(){
 
 	bool homeLoop = true;
 	bool gameLoop = true;
+	bool endLoop = true;
 
 	while(1){
 		drawHomeScreen();
+		endLoop = true;
 		while (homeLoop) {
 			/* If touch pressed */
 			if (returnTouchStateAndLocation(&StaticTouchData) == STMPE811_State_Pressed) {
@@ -75,9 +77,11 @@ void playGame(){
 			}
 		}
 
-//		drawGameBoard();
-		HAL_Delay(1000);
-		drawGameOverScreen(true);
+		drawGameBoard();
+		__HAL_TIM_SET_COUNTER(&htim2, 0);
+//		HAL_TIM_Base_Start(&htim2);
+//		HAL_Delay(1000);
+//		drawGameOverScreen(true);
 
 		while (gameLoop) {
 				/* If touch pressed */
@@ -112,6 +116,25 @@ void playGame(){
 
 			}
 		}
+
+
+		while(endLoop){
+			if (returnTouchStateAndLocation(&StaticTouchData) == STMPE811_State_Pressed) {
+				/* Touch valid */
+				printf("\nX: %03d\nY: %03d\n", StaticTouchData.x, StaticTouchData.y);
+				if(StaticTouchData.x > 110 && StaticTouchData.x < 220){
+					if(StaticTouchData.y > 0 && StaticTouchData.y < 110){
+						endLoop = false;
+						homeLoop = true;
+						gameLoop = true;
+						clearBoard();
+						setCurrentPlayer(PLAYER1);
+						setCurrentColumn(3);
+					}
+				}
+			}
+		}
+
 	}
 
 //	HAL_Delay(2000);

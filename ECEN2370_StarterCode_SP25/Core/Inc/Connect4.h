@@ -17,6 +17,8 @@
 
 #include "LCD_Driver.h"
 #include "stmpe811.h"
+#include "RNG.h"
+#include "TIM2.h"
 
 
 #define ROWS 6
@@ -31,6 +33,9 @@
 #define BUTTON_DROP_PIN GPIO_PIN_0
 #define BUTTON_DROP_PORT GPIOA
 
+extern RNG_HandleTypeDef hrng;
+
+void clearBoard();
 
 void drawHomeScreen(void);
 void drawGameBoard(void);
@@ -38,9 +43,11 @@ void drawCoinIndicator(void);
 int getCurrentColumn();
 void setCurrentColumn(int newColumn);
 int getCurrentPlayer();
+void setCurrentPlayer(int player);
 void incrementPlayerScore(int player);
 void setSinglePlayerMode(bool mode);
 void dropCoin(void);
+bool aiDropCheck();
 void handleTouch(void);
 bool checkWin(void);
 bool isBoardFull(void);
