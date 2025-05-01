@@ -120,7 +120,7 @@ int main(void)
   ApplicationInit(); // Initializes the LCD functionality
 //  LCD_Visual_Demo();
 
-  playGame();
+  playGame(); //the one and only
 
 //  HAL_Delay(5000);
   /* USER CODE END 2 */

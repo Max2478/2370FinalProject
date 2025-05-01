@@ -9,14 +9,12 @@
 #define INC_CONNECT4_H_
 
 #include "stm32f4xx_hal.h"
-//#include "stm32f429i_discovery_lcd.h"
-//#include "stm32f429i_discovery_ts.h"
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include "LCD_Driver.h"
-#include "stmpe811.h"
+//#include "stmpe811.h"
 #include "RNG.h"
 #include "TIM2.h"
 
@@ -35,6 +33,7 @@
 
 extern RNG_HandleTypeDef hrng;
 
+void setStartTime();
 void clearBoard();
 
 void drawHomeScreen(void);
@@ -52,7 +51,7 @@ void handleTouch(void);
 bool checkWin(void);
 bool isBoardFull(void);
 void drawGameOverScreen(bool win);
-int getAIMove(void);
+//int getAIMove(void);
 void resetGame(void);
 
 

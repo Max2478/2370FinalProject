@@ -48,22 +48,21 @@ void playGame(){
 	while(1){
 		drawHomeScreen();
 		endLoop = true;
-		while (homeLoop) {
+		while (homeLoop) { //loop screen 1, checking for a press on either one of the 2 buttons
 			/* If touch pressed */
 			if (returnTouchStateAndLocation(&StaticTouchData) == STMPE811_State_Pressed) {
 				/* Touch valid */
 				printf("\nX: %03d\nY: %03d\n", StaticTouchData.x, StaticTouchData.y);
 				if(StaticTouchData.x > 0 && StaticTouchData.x < 110){
-					if(StaticTouchData.y > 0 && StaticTouchData.y < 110){
+					if(StaticTouchData.y > 0 && StaticTouchData.y < 110){ //pressed 1 Player button
 						LCD_Clear(0, LCD_COLOR_GREEN);
-	//					singlePlayerMode = true;
 						setSinglePlayerMode(true);
 						homeLoop = false;
 					}
 				}
 
 				if(StaticTouchData.x > 110 && StaticTouchData.x < 220){
-					if(StaticTouchData.y > 0 && StaticTouchData.y < 110){
+					if(StaticTouchData.y > 0 && StaticTouchData.y < 110){ //pressed 2 Player button
 						LCD_Clear(0, LCD_COLOR_RED);
 						setSinglePlayerMode(false);
 						homeLoop = false;
@@ -73,41 +72,40 @@ void playGame(){
 			} else {
 				/* Touch not pressed */
 				printf("Not Pressed\n\n");
-	//			drawHomeScreen();
 			}
 		}
 
 		drawGameBoard();
-		__HAL_TIM_SET_COUNTER(&htim2, 0);
+//		__HAL_TIM_SET_COUNTER(&htim2, 0);
+		setStartTime(HAL_GetTick());
 //		HAL_TIM_Base_Start(&htim2);
-//		HAL_Delay(1000);
-//		drawGameOverScreen(true);
 
-		while (gameLoop) {
+		while (gameLoop) { //loop screen 2, checking for presses on the left and right to move the game piece left and
+						   // right respectively, checking for a 4 in a row or full board to trigger screen 3
 				/* If touch pressed */
 			if (returnTouchStateAndLocation(&StaticTouchData) == STMPE811_State_Pressed) {
 				/* Touch valid */
 				printf("\nX: %03d\nY: %03d\n", StaticTouchData.x, StaticTouchData.y);
-				if(StaticTouchData.x > 0 && StaticTouchData.x < 110){
-					setCurrentColumn(getCurrentColumn() - 1);
+				if(StaticTouchData.x > 0 && StaticTouchData.x < 110){ //left side of screen pressed
+					setCurrentColumn(getCurrentColumn() - 1); //move piece left
 					drawGameBoard();
 
-				} else if(StaticTouchData.x > 110 && StaticTouchData.x < 220){
-					setCurrentColumn(getCurrentColumn() + 1);
+				} else if(StaticTouchData.x > 110 && StaticTouchData.x < 220){ //right side of screen pressed
+					setCurrentColumn(getCurrentColumn() + 1); //move piece right
 					drawGameBoard();
 
 				}
 
 			}
-			else if (checkWin()) {
+			else if (checkWin()) { //4 in a row detected
 				if (getCurrentPlayer() == PLAYER1) incrementPlayerScore(1);
 				else incrementPlayerScore(2);
 				gameLoop = false;
-				drawGameOverScreen(true);
+				drawGameOverScreen(true); //-> screen 3 with a winner
 			}
-			else if (isBoardFull()) {
+			else if (isBoardFull()) { //no more moves detected
 				gameLoop = false;
-				drawGameOverScreen(false);
+				drawGameOverScreen(false); //-> screen 3 with a tie
 			}
 
 			else {
@@ -118,18 +116,20 @@ void playGame(){
 		}
 
 
-		while(endLoop){
+		while(endLoop){ //loop screen 3, displaying the winner/tie, scoreboard, time elapsed for the game, and the restart button
 			if (returnTouchStateAndLocation(&StaticTouchData) == STMPE811_State_Pressed) {
 				/* Touch valid */
 				printf("\nX: %03d\nY: %03d\n", StaticTouchData.x, StaticTouchData.y);
 				if(StaticTouchData.x > 110 && StaticTouchData.x < 220){
-					if(StaticTouchData.y > 0 && StaticTouchData.y < 110){
+					if(StaticTouchData.y > 0 && StaticTouchData.y < 110){ //restart press detected
 						endLoop = false;
-						homeLoop = true;
+
+						homeLoop = true; //reset board and states for next run
 						gameLoop = true;
 						clearBoard();
 						setCurrentPlayer(PLAYER1);
 						setCurrentColumn(3);
+
 					}
 				}
 			}
@@ -137,40 +137,6 @@ void playGame(){
 
 	}
 
-//	HAL_Delay(2000);
-
-
-//
-//	while(isSTMPE811_Ready() == false){
-//
-//	}
-
-//	HAL_Delay(10000);
-
-//	drawGameBoard();
-
-//	loop = true;
-//	while (loop) {
-//		/* If touch pressed */
-//		if (returnTouchStateAndLocation(&StaticTouchData) == STMPE811_State_Pressed) {
-//			/* Touch valid */
-//			printf("\nX: %03d\nY: %03d\n", StaticTouchData.x, StaticTouchData.y);
-//			if(StaticTouchData.x > 0 && StaticTouchData.x < 110){
-//				setCurrentColumn(getCurrentColumn() - 1);
-//
-//			}
-//
-//			if(StaticTouchData.x > 110 && StaticTouchData.x < 220){
-//				setCurrentColumn(getCurrentColumn() + 1);
-//
-//			}
-//
-//		} else {
-//			/* Touch not pressed */
-//			printf("Not Pressed\n\n");
-////			drawGameBoard();
-//		}
-//	}
 
 }
 

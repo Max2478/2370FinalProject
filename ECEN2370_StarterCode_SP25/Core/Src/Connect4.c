@@ -8,9 +8,6 @@
 #include "Connect4.h"
 #include <stdio.h>
 
-//extern RNG_HandleTypeDef hrng;
-
-
 
 uint8_t board[ROWS][COLS];
 int currentColumn = 3;
@@ -21,6 +18,11 @@ int scoreP1 = 0, scoreP2 = 0;
 uint32_t roundStartTime;
 
 
+
+void setStartTime(uint32_t newTime){
+	roundStartTime = newTime;
+}
+//Reset board state
 void clearBoard(){
 	for (int r = 0; r < ROWS; r++) {
 		for (int c = 0; c < COLS; c++) {
@@ -29,29 +31,7 @@ void clearBoard(){
 	}
 }
 
-
-//int main(void) {
-//    HAL_Init();
-//    BSP_LCD_Init();
-//    BSP_LCD_LayerDefaultInit(0, LCD_FRAME_BUFFER);
-//    BSP_LCD_SelectLayer(0);
-//    BSP_LCD_Clear(LCD_COLOR_WHITE);
-//    BSP_LCD_DisplayOn();
-//    BSP_TS_Init(BSP_LCD_GetXSize(), BSP_LCD_GetYSize());
-//
-//    drawHomeScreen();
-//
-//    while (1) {
-//        handleTouch();
-//        if (gameActive) {
-//            if (HAL_GPIO_ReadPin(BUTTON_DROP_PORT, BUTTON_DROP_PIN) == GPIO_PIN_SET) {
-//                dropCoin();
-//                HAL_Delay(200);
-//            }
-//        }
-//    }
-//}
-
+//draw screen 1, containing 1 player and 2 player buttons
 void drawHomeScreen(void) {
 
     LCD_Clear(0,LCD_COLOR_WHITE);
@@ -89,6 +69,7 @@ void drawHomeScreen(void) {
 
 }
 
+//draw screen 2, containing the game board, pieces in the board, and the indicator of what column is currently selected
 void drawGameBoard(void) {
     LCD_Clear(0, LCD_COLOR_WHITE);
 //    HAL_Delay(10);
@@ -110,6 +91,7 @@ void drawGameBoard(void) {
 //    HAL_Delay(2);
 }
 
+//drawing which column is currently selected
 void drawCoinIndicator(void) {
 	uint16_t color = COLOR_PLAYER1;
     if (currentPlayer == PLAYER2){
@@ -118,9 +100,12 @@ void drawCoinIndicator(void) {
     LCD_Draw_Circle_Fill(30 + currentColumn * 30, 100, 12, color);
 }
 
+//return selected column
 int getCurrentColumn(){
 	return currentColumn;
 }
+
+//set selected column
 void setCurrentColumn(int newColumn){
 	if(newColumn <= 6){
 		if(newColumn >= 0){
@@ -135,12 +120,18 @@ void setCurrentColumn(int newColumn){
 	}
 
 }
+
+//return current player
 int getCurrentPlayer(){
 	return currentPlayer;
 }
+
+//set current player
 void setCurrentPlayer(int player){
 	currentPlayer = player;
 }
+
+//increase player score by 1
 void incrementPlayerScore(int player){
 	if(player == 1){
 		scoreP1++;
@@ -149,6 +140,8 @@ void incrementPlayerScore(int player){
 		scoreP2++;
 	}
 }
+
+//true for single player, false for two player
 void setSinglePlayerMode(bool mode){
 	if(mode == true){
 		singlePlayerMode = true;
@@ -158,6 +151,7 @@ void setSinglePlayerMode(bool mode){
 	}
 }
 
+//function to drop the current player's piece into the currently selected column
 void dropCoin(void) {
     for (int r = ROWS - 1; r >= 0; r--) {
         if (board[r][currentColumn] == EMPTY) {
@@ -167,7 +161,6 @@ void dropCoin(void) {
 			drawGameBoard();
 
 			if (singlePlayerMode && currentPlayer == PLAYER2) {
-//				int col;
 				uint32_t randomNum;
 				HAL_RNG_GenerateRandomNumber(&hrng, &randomNum);
 //				while (HAL_RNG_GetState(&hrng) != HAL_RNG_STATE_READY);
@@ -175,7 +168,6 @@ void dropCoin(void) {
 				HAL_RNG_GenerateRandomNumber(&hrng, &randomNum);
 //				while (HAL_RNG_GetState(&hrng) != HAL_RNG_STATE_READY);
 
-				//	}
 
 				currentColumn = randomNum % COLS; //getAIMove();
 				drawGameBoard();
@@ -188,27 +180,16 @@ void dropCoin(void) {
 						currentColumn = 0;
 					}
 				}
-//					HAL_RNG_GenerateRandomNumber(&hrng, &randomNum);
-////					while (HAL_RNG_GetState(&hrng) != HAL_RNG_STATE_READY);
-//					HAL_RNG_GenerateRandomNumber(&hrng, &randomNum);
-//					while (HAL_RNG_GetState(&hrng) != HAL_RNG_STATE_READY);
-//					currentColumn = randomNum % COLS; //getAIMove();
-//
-//				}
-
-//				HAL_Delay(700);
-//				printf("entered ai box \n");
-//				dropCoin();
 
 			}
-//			printf("%d\n", r);
+
 
 			break;
 		}
     }
 }
 
-
+//used to iteratively check if the column that the AI opponent has selected is full
 bool aiDropCheck(){
 	for (int r = ROWS - 1; r >= 0; r--) {
 		if (board[r][currentColumn] == EMPTY) {
@@ -222,37 +203,8 @@ bool aiDropCheck(){
 	return false; //column full
 }
 
-//
-//void handleTouch(void) {
-//    TS_StateTypeDef ts;
-//    BSP_TS_GetState(&ts);
-//    if (!ts.TouchDetected) return;
-//
-//    uint16_t x = ts.X;
-//    uint16_t y = ts.Y;
-//
-//    if (!gameActive) {
-//        if (x > 60 && x < 260) {
-//            if (y > 100 && y < 150) {
-//                singlePlayerMode = true;
-//                resetGame();
-//            } else if (y > 180 && y < 230) {
-//                singlePlayerMode = false;
-//                resetGame();
-//            }
-//        }
-//    } else {
-//        if (y < 240) {
-//            if (x < BSP_LCD_GetXSize() / 2) currentColumn = (currentColumn > 0) ? currentColumn - 1 : currentColumn;
-//            else currentColumn = (currentColumn < COLS - 1) ? currentColumn + 1 : currentColumn;
-//            drawGameBoard();
-//        }
-//    }
-//    HAL_Delay(150);
-//}
-//
 
-
+//logic to check if a player has won with a 4 in a row
 bool checkWin(void) {
     for (int r = 0; r < ROWS; r++) {
         for (int c = 0; c < COLS; c++) {
@@ -267,7 +219,7 @@ bool checkWin(void) {
     return false;
 }
 
-
+//logic to check if the board is full, and play cannot continue
 bool isBoardFull(void) {
     for (int c = 0; c < COLS; c++) {
         if (board[0][c] == EMPTY) return false;
@@ -275,19 +227,16 @@ bool isBoardFull(void) {
     return true;
 }
 
-
+//draw screen 3, containing the Winner/Tie, time of game,  running score board, and the Restart button
 void drawGameOverScreen(bool win) {
-//    gameActive = false;
-//    uint32_t duration = HAL_GetTick() - roundStartTime;
-	uint32_t timeElapsed = __HAL_TIM_GET_COUNTER(&htim2);
+//	uint32_t timeElapsed = __HAL_TIM_GET_COUNTER(&htim2);
+	uint32_t timeElapsed = HAL_GetTick() - roundStartTime;
 //	HAL_TIM_Base_Stop(&htim2);
 	__HAL_TIM_SET_COUNTER(&htim2, 0);
 
 	HAL_Delay(1000);
 
     LCD_Clear(0, LCD_COLOR_WHITE);
-//    BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
-//    BSP_LCD_DisplayStringAt(0, 30, (uint8_t *)(win ? "Winner!" : "It's a Tie!"), CENTER_MODE);
 
 
     if(win == false){
@@ -333,30 +282,28 @@ void drawGameOverScreen(bool win) {
 	LCD_DisplayChar(75,130,'e');
 	LCD_DisplayChar(90,130,':');
 
-	int lastI;
-	char timeStr[12];
+//	int lastI;
+	char timeStr[32];
 	//	sprintf(scoreStr2, "000");
-		sprintf(timeStr, "%lu", timeElapsed);
-
-		LCD_DisplayChar(105, 130, timeStr[0]);
-		LCD_DisplayChar(120, 130, '.');
-
-		for(int i = 1; i < 6; i++){
-			LCD_DisplayChar(120 + (15 * i), 130, timeStr[i]);
-			lastI = i;
-		}
-
-		LCD_DisplayChar(120 + (15 * (lastI + 1)), 130, 's');
-
-//	LCD_DisplayChar(115,90,'r');
-
-//    char scoreStr[64];
-//    snprintf(scoreStr, sizeof(scoreStr), "Red: %d  Yellow: %d", scoreP1, scoreP2);
-//    BSP_LCD_DisplayStringAt(0, 70, (uint8_t *)scoreStr, CENTER_MODE);
+//		sprintf(timeStr, "%lu", (timeElapsed / 1000));
+	sprintf(timeStr, "%lu00ms", timeElapsed/2);
 //
-//    char timeStr[64];
-//    snprintf(timeStr, sizeof(timeStr), "Time: %lu sec", duration / 1000);
-//    BSP_LCD_DisplayStringAt(0, 110, (uint8_t *)timeStr, CENTER_MODE);
+//		LCD_DisplayChar(120, 130, timeStr[0]);
+////		LCD_DisplayChar(120, 130, '.');
+//
+		for(int i = 0; timeStr[i] != '\0'; i++){
+			LCD_DisplayChar(105 + (15 * i), 130, timeStr[i]);
+//			lastI = i;
+		}
+//
+//		LCD_DisplayChar(120 + (15 * (lastI + 1)), 130, 's');
+//
+////		char durationMessage[32];
+
+
+//	LCD_DisplayString(105, 130, (uint8_t *)timeStr, LEFT_MODE);
+
+
 
     LCD_Draw_Square_Fill(125, 205, 95, LCD_COLOR_RED);
 	LCD_DisplayChar(130,240,'R');
@@ -402,38 +349,15 @@ void drawGameOverScreen(bool win) {
 		LCD_DisplayChar(65 + (15 * i), 250, scoreStr2[i]);
 	}
 
-//    BSP_LCD_SetTextColor(LCD_COLOR_GREEN);
-//    BSP_LCD_FillRect(80, 160, 160, 50);
-//    BSP_LCD_SetTextColor(LCD_COLOR_BLACK);
-//    BSP_LCD_DisplayStringAt(0, 175, (uint8_t *)"Restart", CENTER_MODE);
-
-//    while (1) {
-//        TS_StateTypeDef ts;
-//        BSP_TS_GetState(&ts);
-//        if (ts.TouchDetected && ts.X > 80 && ts.X < 240 && ts.Y > 160 && ts.Y < 210) {
-//            resetGame();
-//            break;
-//        }
-//    }
 }
-
 
 //
-int getAIMove(void) {
-	int col;
-	uint32_t randomNum;
-	HAL_RNG_GenerateRandomNumber(&hrng, &randomNum);
-//		HAL_RNG_GenerateRandomNumber(&hrng, &randomNum);
+//int getAIMove(void) {
+//	int col;
+//	uint32_t randomNum;
+//	HAL_RNG_GenerateRandomNumber(&hrng, &randomNum);
+////		HAL_RNG_GenerateRandomNumber(&hrng, &randomNum);
+//    return randomNum % COLS;
+//}
 
-//	}
-    return randomNum % COLS;
-}
-////
-////void resetGame(void) {
-////    memset(board, 0, sizeof(board));
-////    currentColumn = 3;
-////    currentPlayer = PLAYER1;
-////    roundStartTime = HAL_GetTick();
-////    gameActive = true;
-////    drawGameBoard();
-////}
+
